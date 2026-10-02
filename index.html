@@ -140,6 +140,71 @@
     <!-- Main Container -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
+      <!-- PIN Code & Delivery Location Search Bar -->
+      <section class="glass-card rounded-2xl p-4 shadow-xl border border-slate-800 bg-slate-900/80">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          
+          <!-- Location Status & City Badge -->
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="map-pin" class="w-5 h-5 text-emerald-400 animate-bounce-subtle"></i>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs uppercase font-extrabold tracking-wider text-emerald-400">PIN Code Delivery Zone:</span>
+                <span id="pincode-location-badge" class="text-xs font-bold text-white px-2.5 py-0.5 rounded-lg bg-slate-800 border border-slate-700">
+                  Bengaluru (Koramangala / HSR) - 560034
+                </span>
+                <span id="pincode-in-stock-badge" class="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+                  🟢 In-Stock Only Mode Active
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Real-time stock filter: <span id="pincode-stock-summary" class="text-emerald-400 font-semibold">8 of 8 platforms in stock</span> (Out-of-stock / unserviceable stores are automatically hidden)
+              </p>
+            </div>
+          </div>
+
+          <!-- PIN Code Input & Set Location CTA -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div class="flex items-center bg-slate-950 rounded-xl border border-slate-700/80 p-1 focus-within:border-emerald-500 shadow-inner">
+              <span class="pl-2.5 text-xs text-slate-500 font-mono font-bold">PIN:</span>
+              <input 
+                id="pincode-input" 
+                type="text" 
+                maxlength="6"
+                value="560034"
+                placeholder="6-digit PIN"
+                class="w-24 sm:w-28 px-2 py-1.5 bg-transparent text-xs font-mono font-black text-emerald-400 placeholder-slate-600 focus:outline-none tracking-widest text-center"
+              />
+              <button id="apply-pincode-btn" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-400 active:scale-95 transition-all shadow-sm flex items-center gap-1">
+                <span>Set PIN</span>
+              </button>
+            </div>
+
+            <!-- Quick Metro Chips -->
+            <div class="flex items-center space-x-1 overflow-x-auto text-[11px] py-0.5">
+              <button class="pincode-quick-chip px-2.5 py-1 rounded-lg bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all whitespace-nowrap" data-pin="560034" title="Bengaluru Koramangala">
+                BLR 560034
+              </button>
+              <button class="pincode-quick-chip px-2.5 py-1 rounded-lg bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all whitespace-nowrap" data-pin="110001" title="New Delhi Connaught Place">
+                DEL 110001
+              </button>
+              <button class="pincode-quick-chip px-2.5 py-1 rounded-lg bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all whitespace-nowrap" data-pin="400050" title="Mumbai Bandra West">
+                BOM 400050
+              </button>
+              <button class="pincode-quick-chip px-2.5 py-1 rounded-lg bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all whitespace-nowrap" data-pin="600017" title="Chennai T. Nagar">
+                MAA 600017
+              </button>
+              <button class="pincode-quick-chip px-2.5 py-1 rounded-lg bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all whitespace-nowrap" data-pin="641001" title="Coimbatore Town Hall">
+                CJB 641001
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       <!-- Universal Live Search & Add by Typing Section -->
       <section class="glass-card rounded-2xl p-4 sm:p-5 shadow-2xl border border-emerald-500/30 bg-gradient-to-r from-slate-900 via-slate-900/90 to-emerald-950/20">
         <div class="flex flex-col gap-2">
@@ -988,6 +1053,105 @@
     let speechRecognitionInstance = null;
     let lastOptimalSplit = null;
 
+    // PIN Code Directory & City Dark Store Serviceability
+    const PINCODE_DIRECTORY = {
+      "560": { city: "Bengaluru", locality: "Koramangala / HSR / Indiranagar", state: "Karnataka", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "kpn", "first_club"] },
+      "110": { city: "New Delhi", locality: "Connaught Place / South Delhi", state: "Delhi-NCR", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"] }, // KPN out of stock in Delhi
+      "122": { city: "Gurugram", locality: "Cyber City / DLF", state: "Haryana", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"] },
+      "201": { city: "Noida", locality: "Sector 18 / Expressway", state: "Uttar Pradesh", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"] },
+      "400": { city: "Mumbai", locality: "Bandra / South Mumbai", state: "Maharashtra", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"] }, // KPN out of stock in Mumbai
+      "600": { city: "Chennai", locality: "T. Nagar / Adyar", state: "Tamil Nadu", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "kpn"] }, // First Club out of stock
+      "500": { city: "Hyderabad", locality: "Hitec City / Madhapur", state: "Telangana", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh"] }, // KPN & First Club out of stock
+      "641": { city: "Coimbatore", locality: "Town Hall / Gandhipuram", state: "Tamil Nadu", activeStores: ["bigbasket", "amazon_fresh", "kpn", "instamart"] }, // Blinkit, Zepto, FK Minutes unserviceable
+      "411": { city: "Pune", locality: "Kothrud / Viman Nagar", state: "Maharashtra", activeStores: ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh"] }
+    };
+
+    let currentPincode = "560034";
+    let currentPincodeData = resolveClientPincode("560034");
+
+    function resolveClientPincode(pinStr) {
+      const pin = String(pinStr || '560034').trim();
+      const prefix = pin.slice(0, 3);
+      if (PINCODE_DIRECTORY[prefix]) {
+        const data = PINCODE_DIRECTORY[prefix];
+        return {
+          pincode: pin,
+          city: data.city,
+          locality: data.locality,
+          state: data.state,
+          serviceableStores: [...data.activeStores]
+        };
+      }
+      return {
+        pincode: pin,
+        city: `PIN ${pin}`,
+        locality: "Metro Zone",
+        state: "India",
+        serviceableStores: ["blinkit", "zepto", "instamart", "bigbasket", "amazon_fresh", "flipkart_minutes"]
+      };
+    }
+
+    // Evaluates live stock status: returns true if in stock, false if out of stock
+    function isStoreInStockForPincode(storeId, itemId = null) {
+      const store = STORES[storeId];
+      if (!store || !store.active) return false;
+      if (!currentPincodeData.serviceableStores.includes(storeId)) return false;
+
+      // Item-level local dark store inventory modeling
+      if (itemId) {
+        // KPN Farm Fresh only has dark stores / outlets in Tamil Nadu and Bengaluru
+        if (storeId === 'kpn' && (currentPincode.startsWith('110') || currentPincode.startsWith('400') || currentPincode.startsWith('500') || currentPincode.startsWith('411'))) {
+          return false;
+        }
+        // First Club (Country Delight) only delivers in Delhi NCR, Mumbai, Bengaluru
+        if (storeId === 'first_club' && (currentPincode.startsWith('600') || currentPincode.startsWith('641') || currentPincode.startsWith('500'))) {
+          return false;
+        }
+        // Quick commerce not yet servicing Coimbatore 641xxx
+        if (['blinkit', 'zepto', 'flipkart_minutes'].includes(storeId) && currentPincode.startsWith('641')) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function updatePincodeLocation(newPin) {
+      const cleaned = String(newPin || '').trim();
+      if (!/^\d{6}$/.test(cleaned)) {
+        alert('Please enter a valid 6-digit Indian PIN code (e.g. 560034, 110001, 400050, 600017, 641001).');
+        return;
+      }
+
+      currentPincode = cleaned;
+      currentPincodeData = resolveClientPincode(cleaned);
+
+      // Update Header & Bar UI
+      const badge = document.getElementById('pincode-location-badge');
+      if (badge) {
+        badge.textContent = `${currentPincodeData.city} (${currentPincodeData.locality}) - ${currentPincode}`;
+      }
+      const pinInput = document.getElementById('pincode-input');
+      if (pinInput) {
+        pinInput.value = currentPincode;
+      }
+
+      const inStockCount = Object.keys(STORES).filter(sId => isStoreInStockForPincode(sId)).length;
+      const summaryEl = document.getElementById('pincode-stock-summary');
+      if (summaryEl) {
+        summaryEl.textContent = `${inStockCount} of ${Object.keys(STORES).length} platforms in stock`;
+      }
+
+      // Re-trigger live search for current input query, spotlighted item, or default
+      const liveSearchInput = document.getElementById('live-search-input');
+      const queryToSearch = (liveSearchInput && liveSearchInput.value.trim()) 
+        ? liveSearchInput.value.trim() 
+        : (currentVoiceSpotlightItem ? currentVoiceSpotlightItem.name : 'Amul Butter 500g');
+      executeLivePriceSearch(queryToSearch, false);
+
+      // Recalculate app state (Champion, Split, Rankings, Store pills)
+      renderApp();
+    }
+
     // ==========================================
     // 3. COMPUTATION & ARBITRAGE ENGINES
     // ==========================================
@@ -995,7 +1159,7 @@
     // Calculates total cost for a specific store given a set of items: [{ itemId, qty }]
     function calculateStoreBasketCost(storeId, items) {
       const store = STORES[storeId];
-      if (!store || !store.active) return null;
+      if (!store || !store.active || !isStoreInStockForPincode(storeId)) return null;
 
       let itemsSubtotal = 0;
       let itemCount = 0;
@@ -1062,12 +1226,12 @@
     // Evaluates every pair of active stores (A, B) and partitions each item to whichever store offers the lower price.
     // Accurately charges Store A delivery/handling/bag fees and Store B fees if they have >= 1 item.
     function computeSmartSplitArbitrage() {
-      const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+      const activeStores = Object.keys(STORES).filter(k => STORES[k].active && isStoreInStockForPincode(k));
       if (activeStores.length < 2 || basket.length === 0) return null;
 
       let bestSplit = null;
 
-      // Iterate all distinct pairs of active stores
+      // Iterate all distinct pairs of active in-stock stores
       for (let i = 0; i < activeStores.length; i++) {
         for (let j = i + 1; j < activeStores.length; j++) {
           const storeAId = activeStores[i];
@@ -1095,6 +1259,7 @@
 
           const costA = calculateStoreBasketCost(storeAId, itemsA);
           const costB = calculateStoreBasketCost(storeBId, itemsB);
+          if (!costA || !costB) continue;
 
           const combinedTotal = costA.total + costB.total;
 
@@ -1119,31 +1284,40 @@
     // 4. UI RENDERING ENGINES
     // ==========================================
 
-    // Initialize Store Serviceability Pills
+    // Initialize Store Serviceability Pills (Stock-Aware for PIN Code: displays only if in stock)
     function renderStoreToggles() {
       const container = document.getElementById('store-toggles-container');
       container.innerHTML = '';
 
-      let activeCount = 0;
+      let inStockActiveCount = 0;
+      let inStockTotalCount = 0;
+
       Object.values(STORES).forEach(store => {
-        if (store.active) activeCount++;
+        const isInStock = isStoreInStockForPincode(store.id);
+        // Only display if in stock for current PIN code location
+        if (!isInStock) return;
+
+        inStockTotalCount++;
+        if (store.active) inStockActiveCount++;
 
         const btn = document.createElement('button');
         btn.id = `toggle-${store.id}`;
         btn.className = `p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
           store.active
-            ? 'bg-slate-900 border-slate-700 text-white shadow-sm'
+            ? 'bg-slate-900 border-slate-700 text-white shadow-sm ring-1 ring-emerald-500/30'
             : 'bg-slate-950/40 border-slate-900 text-slate-500 opacity-60'
         }`;
+
+        let statusBadge = store.active
+          ? `<span class="text-[10px] ml-1 px-1.5 py-0.5 rounded font-mono bg-emerald-500/20 text-emerald-400 font-bold">IN STOCK</span>`
+          : `<span class="text-[10px] ml-1 px-1.5 py-0.5 rounded font-mono bg-slate-800 text-slate-500">PAUSED</span>`;
 
         btn.innerHTML = `
           <div class="flex items-center space-x-2 truncate">
             <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${store.color}"></span>
             <span class="truncate">${store.tag}</span>
           </div>
-          <span class="text-[10px] ml-1 px-1.5 py-0.5 rounded font-mono ${store.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-500'}">
-            ${store.active ? 'ON' : 'OFF'}
-          </span>
+          ${statusBadge}
         `;
 
         btn.addEventListener('click', () => {
@@ -1154,7 +1328,10 @@
         container.appendChild(btn);
       });
 
-      document.getElementById('serviceable-count').textContent = `${activeCount} of ${Object.keys(STORES).length} Active`;
+      const serviceableEl = document.getElementById('serviceable-count');
+      if (serviceableEl) {
+        serviceableEl.textContent = `${inStockActiveCount} of ${inStockTotalCount} In Stock in PIN ${currentPincode}`;
+      }
     }
 
     // Render Shopping Basket Rows
@@ -1183,12 +1360,12 @@
         const item = CATALOG.find(c => c.id === cartItem.itemId);
         if (!item) return;
 
-        // Find min price among active stores
-        const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+        // Find min price among in-stock active stores for this PIN code
+        const inStockStores = Object.keys(STORES).filter(k => STORES[k].active && isStoreInStockForPincode(k, item.id));
         let minPrice = Infinity;
         let minStore = null;
 
-        activeStores.forEach(sId => {
+        inStockStores.forEach(sId => {
           const p = item.prices[sId];
           if (p !== undefined && p < minPrice) {
             minPrice = p;
@@ -1206,7 +1383,9 @@
               <div class="flex items-center space-x-2 text-[11px] text-slate-400">
                 <span>${item.unit}</span>
                 <span>•</span>
-                <span class="text-emerald-400 font-medium">Best: ₹${minPrice} (${minStore ? minStore.tag : 'N/A'})</span>
+                <span class="${minPrice === Infinity ? 'text-rose-400' : 'text-emerald-400'} font-medium">
+                  ${minPrice === Infinity ? 'Out of stock in PIN' : `Best: ₹${minPrice} (${minStore ? minStore.tag : 'N/A'})`}
+                </span>
               </div>
             </div>
           </div>
@@ -1245,15 +1424,14 @@
         return item.category === activeCategory;
       });
 
-      const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
-
       filtered.forEach(item => {
-        // Calculate min and max price among active stores
+        // Calculate min and max price among in-stock active stores for this item and PIN
+        const inStockStores = Object.keys(STORES).filter(k => STORES[k].active && isStoreInStockForPincode(k, item.id));
         let minPrice = Infinity;
         let maxPrice = -Infinity;
         let bestStore = null;
 
-        activeStores.forEach(sId => {
+        inStockStores.forEach(sId => {
           const p = item.prices[sId];
           if (p !== undefined) {
             if (p < minPrice) { minPrice = p; bestStore = STORES[sId]; }
@@ -1283,10 +1461,12 @@
             <!-- Price spread -->
             <div class="mt-2 flex items-center justify-between text-[11px]">
               <span class="text-slate-400">Range:</span>
-              <span class="font-mono text-slate-300">₹${minPrice === Infinity ? 0 : minPrice} - ₹${maxPrice === -Infinity ? 0 : maxPrice}</span>
+              <span class="font-mono text-slate-300">
+                ${minPrice === Infinity ? '<span class="text-rose-400 font-bold">Out of stock in PIN</span>' : `₹${minPrice} - ₹${maxPrice}`}
+              </span>
             </div>
-            <div class="text-[11px] text-emerald-400 font-semibold truncate">
-              Cheapest at ${bestStore ? bestStore.name : 'N/A'} (₹${minPrice})
+            <div class="text-[11px] ${minPrice === Infinity ? 'text-rose-400' : 'text-emerald-400'} font-semibold truncate">
+              ${minPrice === Infinity ? `Unavailable in PIN ${currentPincode}` : `Cheapest at ${bestStore ? bestStore.name : 'N/A'} (₹${minPrice})`}
             </div>
           </div>
 
@@ -1643,7 +1823,7 @@
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000);
-        const res = await fetch(`/api/check-live-prices?q=${encodeURIComponent(query)}`, { signal: controller.signal });
+        const res = await fetch(`/api/check-live-prices?q=${encodeURIComponent(query)}&pincode=${encodeURIComponent(currentPincode)}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (res.ok) {
           liveData = await res.json();
@@ -1747,14 +1927,14 @@
 
       currentVoiceSpotlightItem = matchedItem;
 
-      // Compute cheapest and highest active platform
-      const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+      // Filter active stores to ONLY those strictly in-stock for current PIN code location
+      const inStockStores = Object.keys(STORES).filter(k => STORES[k].active && isStoreInStockForPincode(k, matchedItem.id));
       let cheapestPrice = Infinity;
       let cheapestStore = null;
       let highestPrice = -Infinity;
       let highestStore = null;
 
-      activeStores.forEach(sId => {
+      inStockStores.forEach(sId => {
         const p = matchedItem.prices[sId];
         if (p !== undefined) {
           if (p < cheapestPrice) { cheapestPrice = p; cheapestStore = STORES[sId]; }
@@ -1762,53 +1942,67 @@
         }
       });
 
-      const savings = Math.max(0, highestPrice - cheapestPrice);
-      const spokenVerdict = `At ₹${cheapestPrice}, ${cheapestStore ? cheapestStore.name : 'Unknown'} has the lowest price for ${matchedItem.name}, saving ₹${savings} versus ${highestStore ? highestStore.name : 'other apps'}!`;
+      const savings = (cheapestPrice !== Infinity && highestPrice !== -Infinity) ? Math.max(0, highestPrice - cheapestPrice) : 0;
+      const spokenVerdict = inStockStores.length > 0
+        ? `At ₹${cheapestPrice}, ${cheapestStore ? cheapestStore.name : 'Unknown'} has the lowest price in ${currentPincodeData.city} (PIN ${currentPincode}) for ${matchedItem.name}, saving ₹${savings} versus ${highestStore && highestStore !== cheapestStore ? highestStore.name : 'other apps'}!`
+        : `Sorry, ${matchedItem.name} is currently out of stock across quick-commerce apps in PIN ${currentPincode} (${currentPincodeData.city}).`;
 
       // Update Spotlight Banner
-      document.getElementById('live-scan-status-badge').textContent = `🟢 8/8 Live Pings (Avg 92ms)`;
+      document.getElementById('live-scan-status-badge').textContent = inStockStores.length > 0
+        ? `🟢 ${inStockStores.length} In-Stock Platforms in PIN ${currentPincode}`
+        : `🔴 Out of Stock in PIN ${currentPincode}`;
       document.getElementById('voice-matched-title').textContent = `${matchedItem.emoji} ${matchedItem.name} (${matchedItem.unit})`;
       document.getElementById('voice-spoken-verdict').textContent = spokenVerdict;
 
-      // Populate Live Store Prices Grid with direct external links
+      // Populate Live Store Prices Grid with direct external links (Display ONLY in-stock stores)
       const grid = document.getElementById('voice-store-prices-grid');
       grid.innerHTML = '';
 
-      activeStores.forEach(sId => {
-        const store = STORES[sId];
-        const price = matchedItem.prices[sId];
-        const isCheapest = sId === (cheapestStore ? cheapestStore.id : '');
-        const pingTime = latencies[sId] || '88ms';
-        const verifyUrl = verificationLinks[sId] || generateStoreSearchUrl(sId, query);
-
-        const col = document.createElement('div');
-        col.className = `p-2.5 rounded-xl border flex flex-col justify-between transition-all ${
-          isCheapest
-            ? 'bg-emerald-950/70 border-emerald-500 shadow-md ring-1 ring-emerald-500/80'
-            : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-        }`;
-
-        col.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold text-slate-200 truncate">${store.tag}</span>
-              <span class="text-[9px] font-mono text-emerald-400 font-semibold">${pingTime}</span>
-            </div>
-            <div class="text-lg font-black font-mono my-1 ${isCheapest ? 'text-emerald-400' : 'text-slate-200'}">
-              ₹${price}
-            </div>
-            <div class="text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase text-center ${isCheapest ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-400'}">
-              ${isCheapest ? '🏆 Lowest' : 'Verified'}
-            </div>
+      if (inStockStores.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-6 text-center bg-slate-900/80 border border-amber-500/30 rounded-xl p-4">
+            <span class="text-2xl">⚠️</span>
+            <h4 class="text-sm font-bold text-amber-300 mt-1">Out of Stock in PIN ${currentPincode} (${currentPincodeData.city})</h4>
+            <p class="text-xs text-slate-400 mt-1">No dark stores service this item in this pincode. Try another location like Bengaluru (560034) or New Delhi (110001).</p>
           </div>
-
-          <a href="${verifyUrl}" target="_blank" rel="noopener noreferrer" class="mt-2 pt-1.5 border-t border-slate-800/80 text-[10px] text-emerald-400 hover:text-emerald-300 font-medium flex items-center justify-center gap-1 group truncate" title="Open live search on ${store.name}">
-            <span>Verify Live</span>
-            <i data-lucide="external-link" class="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
-          </a>
         `;
-        grid.appendChild(col);
-      });
+      } else {
+        inStockStores.forEach(sId => {
+          const store = STORES[sId];
+          const price = matchedItem.prices[sId];
+          const isCheapest = sId === (cheapestStore ? cheapestStore.id : '');
+          const pingTime = latencies[sId] || '88ms';
+          const verifyUrl = verificationLinks[sId] || generateStoreSearchUrl(sId, query);
+
+          const col = document.createElement('div');
+          col.className = `p-2.5 rounded-xl border flex flex-col justify-between transition-all ${
+            isCheapest
+              ? 'bg-emerald-950/70 border-emerald-500 shadow-md ring-1 ring-emerald-500/80'
+              : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+          }`;
+
+          col.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-200 truncate">${store.tag}</span>
+                <span class="text-[9px] font-mono text-emerald-400 font-semibold">${pingTime}</span>
+              </div>
+              <div class="text-lg font-black font-mono my-1 ${isCheapest ? 'text-emerald-400' : 'text-slate-200'}">
+                ₹${price}
+              </div>
+              <div class="text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase text-center ${isCheapest ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-400'}">
+                ${isCheapest ? '🏆 Lowest' : 'In Stock'}
+              </div>
+            </div>
+
+            <a href="${verifyUrl}" target="_blank" rel="noopener noreferrer" class="mt-2 pt-1.5 border-t border-slate-800/80 text-[10px] text-emerald-400 hover:text-emerald-300 font-medium flex items-center justify-center gap-1 group truncate" title="Open live search on ${store.name}">
+              <span>Verify Live</span>
+              <i data-lucide="external-link" class="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+            </a>
+          `;
+          grid.appendChild(col);
+        });
+      }
 
       lucide.createIcons();
       if (isVoice) {
@@ -2031,6 +2225,30 @@
           const query = chip.getAttribute('data-query');
           if (liveSearchInput) liveSearchInput.value = query;
           executeLivePriceSearch(query, true);
+        });
+      });
+
+      // PIN Code Location Form & Quick Metro Chips
+      const pincodeInput = document.getElementById('pincode-input');
+      const applyPincodeBtn = document.getElementById('apply-pincode-btn');
+
+      if (applyPincodeBtn && pincodeInput) {
+        applyPincodeBtn.addEventListener('click', () => {
+          updatePincodeLocation(pincodeInput.value);
+        });
+
+        pincodeInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            updatePincodeLocation(pincodeInput.value);
+          }
+        });
+      }
+
+      document.querySelectorAll('.pincode-quick-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const pin = chip.getAttribute('data-pin');
+          if (pincodeInput) pincodeInput.value = pin;
+          updatePincodeLocation(pin);
         });
       });
 

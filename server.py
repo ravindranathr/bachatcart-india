@@ -74,6 +74,39 @@ MARKET_HEURISTICS = {
     }
 }
 
+# PIN Code Directory with City & Store Serviceability
+PINCODE_REGIONS = {
+    "560": {"city": "Bengaluru", "locality": "Koramangala / HSR / Indiranagar", "state": "Karnataka", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "kpn", "first_club"]},
+    "110": {"city": "New Delhi", "locality": "Connaught Place / South Delhi", "state": "Delhi-NCR", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"]}, # KPN not in Delhi
+    "122": {"city": "Gurugram", "locality": "Cyber City / DLF", "state": "Haryana", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"]},
+    "201": {"city": "Noida", "locality": "Sector 18 / Expressway", "state": "Uttar Pradesh", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"]},
+    "400": {"city": "Mumbai", "locality": "Bandra / South Mumbai", "state": "Maharashtra", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "first_club"]}, # KPN not in Mumbai
+    "600": {"city": "Chennai", "locality": "T. Nagar / Adyar", "state": "Tamil Nadu", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "kpn"]}, # First Club out of stock
+    "500": {"city": "Hyderabad", "locality": "Hitec City / Madhapur", "state": "Telangana", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh"]}, # KPN & First Club out of stock
+    "641": {"city": "Coimbatore", "locality": "Town Hall / Gandhipuram", "state": "Tamil Nadu", "active_stores": ["bigbasket", "amazon_fresh", "kpn", "instamart"]}, # Blinkit, Zepto, FK Minutes unserviceable
+    "411": {"city": "Pune", "locality": "Kothrud / Viman Nagar", "state": "Maharashtra", "active_stores": ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh"]}
+}
+
+def resolve_pincode_location(pincode_str):
+    pin = str(pincode_str).strip()
+    prefix = pin[:3]
+    if prefix in PINCODE_REGIONS:
+        data = PINCODE_REGIONS[prefix]
+        return {
+            "pincode": pin,
+            "city": data["city"],
+            "locality": data["locality"],
+            "state": data["state"],
+            "serviceable_stores": data["active_stores"]
+        }
+    return {
+        "pincode": pin,
+        "city": f"PIN {pin}",
+        "locality": "Metro Zone",
+        "state": "India",
+        "serviceable_stores": ["blinkit", "zepto", "instamart", "bigbasket", "amazon_fresh", "flipkart_minutes"]
+    }
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
@@ -88,10 +121,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def handle_live_price_check(self, query_string):
         params = urllib.parse.parse_qs(query_string)
         query = params.get('q', [''])[0].strip().lower()
+        pincode = params.get('pincode', ['560034'])[0].strip()
 
         if not query:
             self.send_error_response(400, "Query parameter 'q' is required.")
             return
+
+        loc = resolve_pincode_location(pincode)
 
         # Determine pricing across all 8 Indian platforms
         matched_key = None
@@ -106,18 +142,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             unit = data["unit"]
             base_prices = data["spread"]
         else:
-            # Dynamic pricing model based on category inference
             is_produce = any(w in query for w in ['onion', 'tomato', 'potato', 'chilli', 'lemon', 'garlic', 'palak', 'methi', 'carrot', 'cabbage', 'mango', 'orange'])
             is_dairy = any(w in query for w in ['milk', 'cheese', 'yogurt', 'lassi', 'cream', 'buttermilk'])
-            
             category = 'produce' if is_produce else ('dairy' if is_dairy else 'staples')
             unit = '1 unit'
             
-            # Seed pseudo-random price variation based on query hash
             seed = sum(ord(c) for c in query)
             base = 40 + (seed % 120)
 
-            # Realistic platform pricing characteristics
             base_prices = {
                 "blinkit": int(base * 1.08),
                 "zepto": int(base * 1.06),
@@ -129,7 +161,18 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 "first_club": int(base * 0.88) if category == 'dairy' else int(base * 0.95),
             }
 
-        # Platform verification deep links
+        # Check stock status per store based on PIN code serviceability
+        stock_status = {}
+        in_stock_prices = {}
+
+        all_stores = ["blinkit", "zepto", "instamart", "flipkart_minutes", "bigbasket", "amazon_fresh", "kpn", "first_club"]
+        for s_id in all_stores:
+            if s_id in loc["serviceable_stores"]:
+                stock_status[s_id] = "in_stock"
+                in_stock_prices[s_id] = base_prices.get(s_id, 50)
+            else:
+                stock_status[s_id] = "out_of_stock"
+
         encoded_q = urllib.parse.quote(query)
         links = {
             "blinkit": f"https://blinkit.com/s/?q={encoded_q}",
@@ -142,7 +185,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             "first_club": f"https://www.countrydelight.in/products/search?q={encoded_q}"
         }
 
-        # Simulated live latency per store
         latencies = {
             "blinkit": f"{random.randint(65, 120)}ms",
             "zepto": f"{random.randint(55, 95)}ms",
@@ -157,10 +199,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         response_payload = {
             "status": "success",
             "timestamp": int(time.time()),
+            "pincode": loc["pincode"],
+            "location": f"{loc['city']} ({loc['locality']})",
             "query": query,
             "category": category,
             "unit": unit,
-            "prices": base_prices,
+            "stock_status": stock_status,
+            "prices": in_stock_prices, # Only in-stock store prices returned
+            "all_prices": base_prices,
             "links": links,
             "latencies": latencies
         }
