@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BachatCart India - Grocery & Quick-Commerce Price Arbitrage</title>
+  <meta name="description" content="India's smart quick-commerce price arbitrage engine. Compare Blinkit, Zepto, Swiggy Instamart, Flipkart Minutes, BigBasket, Amazon Fresh, KPN, and First Club with AI Voice Search and Combinatorial Split Savings.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            }
+          },
+          animation: {
+            'pulse-fast': 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-subtle': 'bounce 2s infinite',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Custom scrollbar for dark modern aesthetics */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(51, 65, 85, 0.4);
+    }
+    .glass-highlight {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .glass-jugaad {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .wave-bar {
+      transition: height 0.15s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-emerald-500 selection:text-slate-950">
+
+  <!-- Ambient Glow Background -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-40 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/3 -right-20 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-20 left-1/3 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative z-10 flex flex-col min-h-screen">
+    
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        
+        <!-- Logo & Branding -->
+        <div class="flex items-center space-x-3">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 p-0.5 shadow-lg shadow-emerald-500/20 flex items-center justify-center">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+              <i data-lucide="shopping-bag" class="w-6 h-6 text-emerald-400"></i>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xl sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-white bg-clip-text text-transparent">
+                BachatCart
+              </span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 tracking-wide uppercase">
+                India 🇮🇳
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 hidden sm:block">Quick-Commerce & Hyperlocal Grocery Arbitrage</p>
+          </div>
+        </div>
+
+        <!-- Voice & Audio Control Center -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          
+          <!-- Sound Toggle -->
+          <button id="toggle-audio-btn" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-900 border border-slate-700/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-all shadow-sm" title="Toggle Spoken Voice Verdicts">
+            <i id="audio-icon" data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+            <span id="audio-label" class="hidden md:inline">Voice: On</span>
+          </button>
+
+          <!-- Ask AI Voice Button with 5s Countdown Timer -->
+          <button id="start-voice-btn" class="relative group flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 hover:brightness-110 shadow-lg shadow-emerald-500/25 transition-all active:scale-95 overflow-hidden" title="Ask AI Voice (5 seconds listening window)">
+            <span id="voice-ping" class="hidden absolute -top-1 -right-1 flex h-3 w-3 z-20">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            <!-- 5-Second Animated Progress Bar -->
+            <div id="voice-timer-bar" class="absolute bottom-0 left-0 h-1 bg-red-500 w-0 transition-all duration-1000 ease-linear z-10"></div>
+            <i id="mic-icon" data-lucide="mic" class="w-4 h-4 z-10"></i>
+            <span id="voice-btn-text" class="z-10">Ask AI Voice (5s)</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+      <!-- Store Serviceability Bar -->
+      <section class="glass-card rounded-2xl p-4 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
+            <span class="text-xs sm:text-sm font-semibold text-slate-300">Serviceable Platforms in Your PIN Code:</span>
+            <span id="serviceable-count" class="text-xs px-2 py-0.5 rounded-md font-bold bg-slate-800 text-emerald-400 border border-slate-700">
+              8 of 8 Active
+            </span>
+          </div>
+          <div class="flex items-center space-x-2 text-xs text-slate-400">
+            <button id="select-all-stores-btn" class="hover:text-emerald-400 transition-colors underline">Select All</button>
+            <span>•</span>
+            <button id="clear-stores-btn" class="hover:text-rose-400 transition-colors underline">Quick Deselect</button>
+          </div>
+        </div>
+
+        <!-- 8 Store Badges -->
+        <div id="store-toggles-container" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- Voice Spotlight Banner (Collapsible/Dynamic) -->
+      <section id="voice-spotlight-banner" class="hidden glass-highlight rounded-2xl p-5 shadow-2xl relative overflow-hidden transition-all duration-300">
+        <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-700/60">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+              <i data-lucide="sparkles" class="w-5 h-5 animate-pulse"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs uppercase font-extrabold tracking-wider text-emerald-400">AI Voice Assistant Response</span>
+                <span id="voice-query-badge" class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                  "How much is 1kg onion?"
+                </span>
+              </div>
+              <h2 id="voice-matched-title" class="text-base sm:text-lg font-bold text-white mt-0.5">
+                Nashik Red Onions (1 kg)
+              </h2>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2 self-stretch md:self-auto">
+            <button id="voice-add-to-basket-btn" class="flex-1 md:flex-none flex items-center justify-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition-all shadow-md">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Add to Basket</span>
+            </button>
+            <button id="close-voice-banner-btn" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Close">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Voice Verdict Spoken Text & Audio Waveform -->
+        <div class="mt-4 p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-4">
+          <div class="flex items-center space-x-3">
+            <i data-lucide="bot" class="w-5 h-5 text-emerald-400 flex-shrink-0"></i>
+            <p id="voice-spoken-verdict" class="text-sm font-medium text-slate-200">
+              Loading voice response...
+            </p>
+          </div>
+          <button id="replay-voice-btn" class="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 flex items-center space-x-1.5 transition-all">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+            <span>Replay</span>
+          </button>
+        </div>
+
+        <!-- Spotlight Price Comparison Across Stores -->
+        <div class="mt-4">
+          <div class="text-xs font-semibold text-slate-400 mb-2">Live Price Comparison Across Active Stores:</div>
+          <div id="voice-store-prices-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulated Voice Query Chips (Quick Test Bar) -->
+      <section class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="text-slate-400 font-medium flex items-center gap-1">
+          <i data-lucide="mic-vocal" class="w-3.5 h-3.5 text-emerald-400"></i> Try Voice Prompts:
+        </span>
+        <button class="voice-preset-chip px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-950/60 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all" data-query="How much is 1kg onion?">
+          🧅 "How much is 1kg onion?"
+        </button>
+        <button class="voice-preset-chip px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-950/60 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all" data-query="Cheapest Nandini milk 1L">
+          🥛 "Cheapest Nandini milk 1L"
+        </button>
+        <button class="voice-preset-chip px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-950/60 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all" data-query="Best price for Basmati rice 5kg">
+          🌾 "Best price for Basmati rice"
+        </button>
+        <button class="voice-preset-chip px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-950/60 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all" data-query="How much is tender coconut?">
+          🥥 "How much is tender coconut?"
+        </button>
+        <button class="voice-preset-chip px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-emerald-950/60 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition-all" data-query="Eggs 12 pcs price">
+          🥚 "Eggs 12 pcs price"
+        </button>
+      </section>
+
+      <!-- Arbitrage Savings Recommendation Dashboard (2 Cards) -->
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        
+        <!-- Recommendation 1: Single-App Champion Card -->
+        <div class="glass-highlight rounded-2xl p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between border-t-2 border-emerald-500">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                  <i data-lucide="trophy" class="w-4 h-4"></i>
+                </span>
+                <div>
+                  <h3 class="text-xs uppercase font-extrabold tracking-wider text-emerald-400">Single-App Champion</h3>
+                  <p class="text-xs text-slate-400">Cheapest single platform for entire cart</p>
+                </div>
+              </div>
+              <span id="single-champion-badge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500 text-slate-950">
+                RECOMMENDED
+              </span>
+            </div>
+
+            <!-- Champion Brand Banner -->
+            <div id="champion-store-banner" class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between mt-2">
+              <div class="flex items-center space-x-3">
+                <div id="champion-store-logo" class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-extrabold text-sm shadow-md bg-emerald-600">
+                  KPN
+                </div>
+                <div>
+                  <div class="text-lg font-black text-white" id="champion-store-name">KPN Farm Fresh</div>
+                  <div class="text-xs text-slate-400" id="champion-store-sub">Farm-direct pricing</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-2xl font-black font-mono text-emerald-400" id="champion-total-cost">₹0</div>
+                <div class="text-xs text-emerald-300 font-semibold" id="champion-savings-vs-worst">Saves ₹0 vs worst</div>
+              </div>
+            </div>
+
+            <!-- Fee Breakdown -->
+            <div class="mt-4 grid grid-cols-4 gap-2 text-center text-xs">
+              <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                <div class="text-slate-400 text-[11px]">Items Total</div>
+                <div class="font-mono font-bold text-slate-200 mt-0.5" id="champion-items-subtotal">₹0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                <div class="text-slate-400 text-[11px]">Delivery</div>
+                <div class="font-mono font-bold text-slate-200 mt-0.5" id="champion-delivery-fee">₹0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                <div class="text-slate-400 text-[11px]">Handling</div>
+                <div class="font-mono font-bold text-slate-200 mt-0.5" id="champion-handling-fee">₹0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                <div class="text-slate-400 text-[11px]">Bag Fee</div>
+                <div class="font-mono font-bold text-slate-200 mt-0.5" id="champion-bag-fee">₹0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> No split ordering hassle
+            </span>
+            <span id="champion-delivery-status" class="text-emerald-400 font-medium">Free delivery reached</span>
+          </div>
+        </div>
+
+        <!-- Recommendation 2: Smart Split Arbitrage Card (Bachat Jugaad) -->
+        <div class="glass-jugaad rounded-2xl p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between border-t-2 border-amber-500">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+                  <i data-lucide="zap" class="w-4 h-4"></i>
+                </span>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <h3 class="text-xs uppercase font-extrabold tracking-wider text-amber-400">Smart Split Engine</h3>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded font-black bg-amber-500 text-slate-950 uppercase">Bachat Jugaad</span>
+                  </div>
+                  <p class="text-xs text-slate-400">Combinatorial 2-Store Arbitrage (Net of Dual Fees)</p>
+                </div>
+              </div>
+              <span id="smart-split-badge" class="px-2.5 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                EXTRA SAVINGS
+              </span>
+            </div>
+
+            <!-- Smart Split Stores Banner -->
+            <div id="smart-split-stores-banner" class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span id="split-store-1-tag" class="px-2 py-0.5 rounded font-bold text-xs bg-emerald-950 text-emerald-300 border border-emerald-500/30">Store 1</span>
+                  <span class="text-slate-500 font-black">+</span>
+                  <span id="split-store-2-tag" class="px-2 py-0.5 rounded font-bold text-xs bg-blue-950 text-blue-300 border border-blue-500/30">Store 2</span>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-black font-mono text-amber-400" id="split-net-total">₹0</div>
+                  <div class="text-xs text-amber-300 font-bold" id="split-net-savings">Extra ₹0 saved!</div>
+                </div>
+              </div>
+
+              <!-- Item Partition Visualization -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                  <div class="font-bold text-slate-300 flex items-center justify-between" id="split-store-1-header">
+                    <span>Store 1 Items</span>
+                    <span class="font-mono text-emerald-400">₹0</span>
+                  </div>
+                  <p id="split-store-1-items" class="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                    Loading produce & dairy...
+                  </p>
+                  <div id="split-store-1-fees" class="text-[10px] text-slate-500 mt-1">Fees: ₹0</div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                  <div class="font-bold text-slate-300 flex items-center justify-between" id="split-store-2-header">
+                    <span>Store 2 Items</span>
+                    <span class="font-mono text-blue-400">₹0</span>
+                  </div>
+                  <p id="split-store-2-items" class="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                    Loading dry staples...
+                  </p>
+                  <div id="split-store-2-fees" class="text-[10px] text-slate-500 mt-1">Fees: ₹0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+            <span id="split-verdict-summary" class="flex items-center gap-1.5 text-amber-300">
+              <i data-lucide="sparkle" class="w-3.5 h-3.5"></i> Dual platform split beats single store!
+            </span>
+            <button id="view-split-details-btn" class="hover:text-white transition-colors underline font-medium">
+              View Partition
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Split Details Modal / Drawer -->
+      <div id="split-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="glass-card max-w-lg w-full rounded-2xl p-6 shadow-2xl border border-slate-700 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="layers" class="w-5 h-5 text-amber-400"></i>
+              <h3 class="font-bold text-base text-white">Smart Split Jugaad Blueprint</h3>
+            </div>
+            <button id="close-split-modal" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div id="split-modal-content" class="space-y-4 text-xs">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Workspace: Basket & Catalog on Left, Full Platform Comparison on Right -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Basket & Item Controls (7 Cols) -->
+        <div class="lg:col-span-7 space-y-5">
+          
+          <!-- Shopping Basket Section -->
+          <div class="glass-card rounded-2xl p-5 shadow-xl">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+              <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                  <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h2 class="text-base font-bold text-white">Shopping Basket</h2>
+                  <span id="basket-item-count" class="text-xs text-slate-400">5 items selected</span>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <button id="toggle-importer-btn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 border border-slate-700/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-all">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400"></i>
+                  <span>WhatsApp List</span>
+                </button>
+                <button id="clear-basket-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 border border-rose-500/20 transition-all">
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <!-- WhatsApp / Notepad Bulk List Importer Collapsible -->
+            <div id="importer-drawer" class="hidden my-4 p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <i data-lucide="clipboard-paste" class="w-4 h-4 text-emerald-400"></i>
+                  Paste WhatsApp or Notepad Shopping List
+                </span>
+                <span class="text-[10px] text-slate-500">Auto-detects items & quantities</span>
+              </div>
+              <textarea id="bulk-import-textarea" rows="3" class="w-full bg-slate-950 text-slate-200 text-xs rounded-lg p-3 border border-slate-700 focus:outline-none focus:border-emerald-500 font-mono resize-none" placeholder="e.g.&#10;1kg onion&#10;2 tomato&#10;1 milk&#10;atta 5kg&#10;12 eggs"></textarea>
+              <div class="flex items-center justify-between">
+                <button id="load-sample-list-btn" class="text-[11px] text-slate-400 hover:text-emerald-400 underline">
+                  Load Typical Sunday Grocery Run
+                </button>
+                <button id="apply-bulk-import-btn" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition-all">
+                  Parse & Update Basket
+                </button>
+              </div>
+            </div>
+
+            <!-- Active Basket Items List -->
+            <div id="basket-items-list" class="divide-y divide-slate-800/60 max-h-[380px] overflow-y-auto pr-1 my-2">
+              <!-- Dynamically populated basket rows -->
+            </div>
+
+            <!-- Quick Add Dropdown / Search -->
+            <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row gap-2">
+              <select id="catalog-quick-add-select" class="flex-grow bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-200 focus:outline-none focus:border-emerald-500">
+                <option value="">+ Add item from authentic Indian staples catalog...</option>
+              </select>
+              <button id="add-selected-item-btn" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 transition-all">
+                Add Item
+              </button>
+            </div>
+          </div>
+
+          <!-- Catalog Quick Explorer -->
+          <div class="glass-card rounded-2xl p-5 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 class="text-sm font-bold text-white">Full Indian Staples Catalog</h3>
+                <p class="text-xs text-slate-400">Click to instantly add or inspect baseline platform prices</p>
+              </div>
+              <!-- Category Tabs -->
+              <div class="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+                <button class="catalog-filter-btn px-3 py-1 rounded-lg font-semibold bg-emerald-500 text-slate-950" data-cat="all">All</button>
+                <button class="catalog-filter-btn px-3 py-1 rounded-lg font-semibold text-slate-400 hover:text-white" data-cat="produce">Produce</button>
+                <button class="catalog-filter-btn px-3 py-1 rounded-lg font-semibold text-slate-400 hover:text-white" data-cat="dairy">Dairy & Eggs</button>
+                <button class="catalog-filter-btn px-3 py-1 rounded-lg font-semibold text-slate-400 hover:text-white" data-cat="staples">Staples</button>
+              </div>
+            </div>
+
+            <div id="catalog-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[440px] overflow-y-auto pr-1">
+              <!-- Catalog items rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Store Cost Comparison List (5 Cols) -->
+        <div class="lg:col-span-5 space-y-5">
+          
+          <div class="glass-card rounded-2xl p-5 shadow-xl sticky top-24">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="bar-chart-3" class="w-5 h-5 text-emerald-400"></i>
+                <h2 class="text-base font-bold text-white">All Platform Rankings</h2>
+              </div>
+              <span class="text-xs text-slate-400">Sorted Lowest to Highest</span>
+            </div>
+
+            <!-- Fee Policy Summary Collapsible -->
+            <div class="my-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-between">
+              <span>Real Indian quick-comm delivery, handling & bag fees included</span>
+              <button id="toggle-fee-rules-btn" class="text-emerald-400 hover:underline">View Rules</button>
+            </div>
+
+            <div id="fee-rules-modal" class="hidden mb-4 p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-300 space-y-1.5">
+              <div class="font-bold text-emerald-400 mb-1">Platform Fee Mechanics Modeled:</div>
+              <ul class="space-y-1 list-disc list-inside text-slate-400">
+                <li><strong class="text-slate-200">Blinkit:</strong> ₹25 del (free ≥₹249), ₹16 hand, ₹5 bag</li>
+                <li><strong class="text-slate-200">Zepto:</strong> ₹30 del (free ≥₹249), ₹10 hand, ₹5 bag</li>
+                <li><strong class="text-slate-200">Swiggy Instamart:</strong> ₹25 del (free ≥₹299), ₹6 hand, ₹9 bag</li>
+                <li><strong class="text-slate-200">Flipkart Minutes:</strong> ₹20 del (free ≥₹199), ₹7 hand, ₹5 bag</li>
+                <li><strong class="text-slate-200">BigBasket:</strong> ₹30 del (free ≥₹450), ₹0 hand, ₹6 bag</li>
+                <li><strong class="text-slate-200">Amazon Fresh:</strong> ₹35 del (free ≥₹499), ₹0 hand, ₹0 bag</li>
+                <li><strong class="text-slate-200">KPN Farm Fresh:</strong> ₹25 del (free ≥₹299), ₹0 hand, ₹4 bag</li>
+                <li><strong class="text-slate-200">First Club:</strong> ₹20 del (free ≥₹199), ₹0 hand, ₹0 bag</li>
+              </ul>
+            </div>
+
+            <!-- Platform Leaderboard Cards -->
+            <div id="store-rankings-list" class="space-y-2.5">
+              <!-- Dynamically populated store rankings -->
+            </div>
+
+            <!-- Arbitrage Math Insight Note -->
+            <div class="mt-4 p-3.5 rounded-xl bg-slate-900/40 border border-slate-800/60 text-xs text-slate-400 flex items-start space-x-2.5">
+              <i data-lucide="info" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+              <p>
+                Platform totals automatically recalculate delivery waivers when your basket crosses each store's minimum free delivery threshold.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-slate-800/80 bg-slate-950/60 py-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div class="flex items-center space-x-2">
+          <span>BachatCart India © 2026</span>
+          <span>•</span>
+          <span>Hyperlocal Quick-Commerce Arbitrage</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="text-slate-400">Powered by Web Speech API & Combinatorial Partitioning</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Application Logic & Data Layer -->
+  <script>
+    // ==========================================
+    // 1. DATA LAYER & INDIAN PLATFORMS SPEC
+    // ==========================================
+    const STORES = {
+      blinkit: {
+        id: 'blinkit',
+        name: 'Blinkit',
+        color: '#F8CB46',
+        textColor: '#000000',
+        bgClass: 'bg-amber-400',
+        tag: 'Blinkit',
+        badgeBorder: 'border-yellow-400/40',
+        deliveryFee: 25,
+        freeDeliveryAbove: 249,
+        handlingFee: 16,
+        bagFee: 5,
+        deliveryTime: '10-12 mins',
+        active: true
+      },
+      zepto: {
+        id: 'zepto',
+        name: 'Zepto',
+        color: '#7C3AED',
+        textColor: '#ffffff',
+        bgClass: 'bg-purple-600',
+        tag: 'Zepto',
+        badgeBorder: 'border-purple-500/40',
+        deliveryFee: 30,
+        freeDeliveryAbove: 249,
+        handlingFee: 10,
+        bagFee: 5,
+        deliveryTime: '10 mins',
+        active: true
+      },
+      instamart: {
+        id: 'instamart',
+        name: 'Swiggy Instamart',
+        color: '#FC8019',
+        textColor: '#ffffff',
+        bgClass: 'bg-orange-500',
+        tag: 'Instamart',
+        badgeBorder: 'border-orange-500/40',
+        deliveryFee: 25,
+        freeDeliveryAbove: 299,
+        handlingFee: 6,
+        bagFee: 9,
+        deliveryTime: '12-15 mins',
+        active: true
+      },
+      flipkart_minutes: {
+        id: 'flipkart_minutes',
+        name: 'Flipkart Minutes',
+        color: '#2874F0',
+        textColor: '#ffffff',
+        bgClass: 'bg-blue-600',
+        tag: 'FK Minutes',
+        badgeBorder: 'border-blue-500/40',
+        deliveryFee: 20,
+        freeDeliveryAbove: 199,
+        handlingFee: 7,
+        bagFee: 5,
+        deliveryTime: '10-15 mins',
+        active: true
+      },
+      bigbasket: {
+        id: 'bigbasket',
+        name: 'BigBasket / BB Now',
+        color: '#84CC16',
+        textColor: '#000000',
+        bgClass: 'bg-lime-500',
+        tag: 'BB Now',
+        badgeBorder: 'border-lime-500/40',
+        deliveryFee: 30,
+        freeDeliveryAbove: 450,
+        handlingFee: 0,
+        bagFee: 6,
+        deliveryTime: '15-20 mins',
+        active: true
+      },
+      amazon_fresh: {
+        id: 'amazon_fresh',
+        name: 'Amazon Now / Fresh',
+        color: '#00A8E1',
+        textColor: '#000000',
+        bgClass: 'bg-cyan-500',
+        tag: 'Amazon Fresh',
+        badgeBorder: 'border-cyan-500/40',
+        deliveryFee: 35,
+        freeDeliveryAbove: 499,
+        handlingFee: 0,
+        bagFee: 0,
+        deliveryTime: 'Same-day slot',
+        active: true
+      },
+      kpn: {
+        id: 'kpn',
+        name: 'KPN Farm Fresh',
+        subName: 'Kovai Pazhamudir Nilayam',
+        color: '#10B981',
+        textColor: '#ffffff',
+        bgClass: 'bg-emerald-600',
+        tag: 'KPN Farm',
+        badgeBorder: 'border-emerald-500/40',
+        deliveryFee: 25,
+        freeDeliveryAbove: 299,
+        handlingFee: 0,
+        bagFee: 4,
+        deliveryTime: '30-45 mins',
+        active: true
+      },
+      first_club: {
+        id: 'first_club',
+        name: 'First Club',
+        subName: 'Country Delight',
+        color: '#EF4444',
+        textColor: '#ffffff',
+        bgClass: 'bg-rose-600',
+        tag: 'First Club',
+        badgeBorder: 'border-rose-500/40',
+        deliveryFee: 20,
+        freeDeliveryAbove: 199,
+        handlingFee: 0,
+        bagFee: 0,
+        deliveryTime: 'Morning / 30m',
+        active: true
+      }
+    };
+
+    // 12 Authentic Indian Staples Catalog
+    const CATALOG = [
+      {
+        id: 'onion_1kg',
+        name: 'Nashik Red Onions',
+        unit: '1 kg',
+        category: 'produce',
+        emoji: '🧅',
+        keywords: ['onion', 'onions', 'pyaz', 'kanda', 'red onion'],
+        prices: {
+          blinkit: 38,
+          zepto: 36,
+          instamart: 39,
+          flipkart_minutes: 34,
+          bigbasket: 35,
+          amazon_fresh: 37,
+          kpn: 29, // Champion produce
+          first_club: 32
+        }
+      },
+      {
+        id: 'tomato_1kg',
+        name: 'Farm Hybrid Tomatoes',
+        unit: '1 kg',
+        category: 'produce',
+        emoji: '🍅',
+        keywords: ['tomato', 'tomatoes', 'tamatar', 'hybrid tomato'],
+        prices: {
+          blinkit: 32,
+          zepto: 30,
+          instamart: 34,
+          flipkart_minutes: 28,
+          bigbasket: 29,
+          amazon_fresh: 31,
+          kpn: 24, // Farm fresh lowest
+          first_club: 27
+        }
+      },
+      {
+        id: 'potato_1kg',
+        name: 'Jyoti Potatoes',
+        unit: '1 kg',
+        category: 'produce',
+        emoji: '🥔',
+        keywords: ['potato', 'potatoes', 'aloo', 'batata'],
+        prices: {
+          blinkit: 30,
+          zepto: 28,
+          instamart: 32,
+          flipkart_minutes: 26,
+          bigbasket: 27,
+          amazon_fresh: 29,
+          kpn: 22,
+          first_club: 25
+        }
+      },
+      {
+        id: 'nandini_milk_1l',
+        name: 'Nandini Toned Milk',
+        unit: '1 L',
+        category: 'dairy',
+        emoji: '🥛',
+        keywords: ['nandini', 'milk', 'toned milk', 'doodh', 'nandini milk'],
+        prices: {
+          blinkit: 44,
+          zepto: 44,
+          instamart: 44,
+          flipkart_minutes: 43,
+          bigbasket: 44,
+          amazon_fresh: 44,
+          kpn: 44,
+          first_club: 42 // Dairy club advantage
+        }
+      },
+      {
+        id: 'amul_milk_500ml',
+        name: 'Amul Taaza Milk',
+        unit: '500 ml',
+        category: 'dairy',
+        emoji: '🥛',
+        keywords: ['amul', 'taaza', 'amul taaza', 'amul milk'],
+        prices: {
+          blinkit: 27,
+          zepto: 27,
+          instamart: 27,
+          flipkart_minutes: 26,
+          bigbasket: 27,
+          amazon_fresh: 27,
+          kpn: 27,
+          first_club: 26
+        }
+      },
+      {
+        id: 'cd_cow_milk_1l',
+        name: 'Country Delight Cow Milk',
+        unit: '1 L',
+        category: 'dairy',
+        emoji: '🐄',
+        keywords: ['country delight', 'cow milk', 'cd milk', 'desi milk'],
+        prices: {
+          blinkit: 78,
+          zepto: 79,
+          instamart: 80,
+          flipkart_minutes: 76,
+          bigbasket: 75,
+          amazon_fresh: 77,
+          kpn: 75,
+          first_club: 68 // Direct farm dairy pricing
+        }
+      },
+      {
+        id: 'aashirvaad_atta_5kg',
+        name: 'Aashirvaad Shudh Chakki Atta',
+        unit: '5 kg',
+        category: 'staples',
+        emoji: '🌾',
+        keywords: ['atta', 'aashirvaad', 'wheat flour', 'chakki atta', 'aashirwad'],
+        prices: {
+          blinkit: 265,
+          zepto: 270,
+          instamart: 268,
+          flipkart_minutes: 239, // Heavy staple discount
+          bigbasket: 245,
+          amazon_fresh: 242,
+          kpn: 260,
+          first_club: 255
+        }
+      },
+      {
+        id: 'india_gate_rice_5kg',
+        name: 'India Gate Feast Rozzana Basmati Rice',
+        unit: '5 kg',
+        category: 'staples',
+        emoji: '🍚',
+        keywords: ['rice', 'basmati', 'india gate', 'rozzana', 'chawal'],
+        prices: {
+          blinkit: 435,
+          zepto: 440,
+          instamart: 445,
+          flipkart_minutes: 399,
+          bigbasket: 410,
+          amazon_fresh: 395, // Bulk staple champion
+          kpn: 430,
+          first_club: 425
+        }
+      },
+      {
+        id: 'fortune_oil_1l',
+        name: 'Fortune Refined Sunflower Oil',
+        unit: '1 L',
+        category: 'staples',
+        emoji: '🌻',
+        keywords: ['oil', 'fortune', 'sunflower oil', 'cooking oil', 'tel'],
+        prices: {
+          blinkit: 148,
+          zepto: 145,
+          instamart: 150,
+          flipkart_minutes: 135,
+          bigbasket: 138,
+          amazon_fresh: 136,
+          kpn: 144,
+          first_club: 142
+        }
+      },
+      {
+        id: 'eggs_12pcs',
+        name: 'Farm White Eggs',
+        unit: '12 pcs',
+        category: 'dairy',
+        emoji: '🥚',
+        keywords: ['eggs', 'egg', 'anda', 'ande', 'farm eggs', '12 eggs'],
+        prices: {
+          blinkit: 96,
+          zepto: 94,
+          instamart: 98,
+          flipkart_minutes: 89,
+          bigbasket: 90,
+          amazon_fresh: 92,
+          kpn: 84,
+          first_club: 82 // Country delight eggs discount
+        }
+      },
+      {
+        id: 'tender_coconut_1pc',
+        name: 'Pollachi Tender Coconut',
+        unit: '1 pc',
+        category: 'produce',
+        emoji: '🥥',
+        keywords: ['coconut', 'tender coconut', 'nariyal', 'elaneer'],
+        prices: {
+          blinkit: 65,
+          zepto: 62,
+          instamart: 68,
+          flipkart_minutes: 59,
+          bigbasket: 60,
+          amazon_fresh: 64,
+          kpn: 48, // KPN direct Tamil Nadu pollachi source
+          first_club: 52
+        }
+      },
+      {
+        id: 'tata_salt_1kg',
+        name: 'Tata Salt Vacuum Evaporated',
+        unit: '1 kg',
+        category: 'staples',
+        emoji: '🧂',
+        keywords: ['salt', 'tata salt', 'namak', 'vacuum salt'],
+        prices: {
+          blinkit: 28,
+          zepto: 28,
+          instamart: 28,
+          flipkart_minutes: 24,
+          bigbasket: 25,
+          amazon_fresh: 25,
+          kpn: 28,
+          first_club: 27
+        }
+      }
+    ];
+
+    // ==========================================
+    // 2. APPLICATION STATE
+    // ==========================================
+    // Pre-populate with a rich Indian grocery run
+    let basket = [
+      { itemId: 'onion_1kg', qty: 1 },
+      { itemId: 'tomato_1kg', qty: 1 },
+      { itemId: 'nandini_milk_1l', qty: 2 },
+      { itemId: 'aashirvaad_atta_5kg', qty: 1 },
+      { itemId: 'eggs_12pcs', qty: 1 }
+    ];
+
+    let isAudioEnabled = true;
+    let isListening = false;
+    let activeCategory = 'all';
+    let currentVoiceSpotlightItem = null;
+    let speechRecognitionInstance = null;
+    let lastOptimalSplit = null;
+
+    // ==========================================
+    // 3. COMPUTATION & ARBITRAGE ENGINES
+    // ==========================================
+    
+    // Calculates total cost for a specific store given a set of items: [{ itemId, qty }]
+    function calculateStoreBasketCost(storeId, items) {
+      const store = STORES[storeId];
+      if (!store || !store.active) return null;
+
+      let itemsSubtotal = 0;
+      let itemCount = 0;
+
+      items.forEach(({ itemId, qty }) => {
+        const item = CATALOG.find(c => c.id === itemId);
+        if (item && item.prices[storeId] !== undefined) {
+          itemsSubtotal += item.prices[storeId] * qty;
+          itemCount += qty;
+        }
+      });
+
+      if (itemCount === 0) {
+        return {
+          storeId,
+          storeName: store.name,
+          itemsSubtotal: 0,
+          deliveryFee: 0,
+          handlingFee: 0,
+          bagFee: 0,
+          total: 0,
+          isFreeDelivery: false,
+          active: true
+        };
+      }
+
+      const isFreeDelivery = itemsSubtotal >= store.freeDeliveryAbove;
+      const deliveryFee = isFreeDelivery ? 0 : store.deliveryFee;
+      const handlingFee = store.handlingFee;
+      const bagFee = store.bagFee;
+      const total = itemsSubtotal + deliveryFee + handlingFee + bagFee;
+
+      return {
+        storeId,
+        storeName: store.name,
+        color: store.color,
+        itemsSubtotal,
+        deliveryFee,
+        handlingFee,
+        bagFee,
+        total,
+        isFreeDelivery,
+        active: true
+      };
+    }
+
+    // Computes rankings across all active stores for current basket
+    function computeAllStoreRankings() {
+      const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+      const rankings = [];
+
+      activeStores.forEach(sId => {
+        const costData = calculateStoreBasketCost(sId, basket);
+        if (costData) {
+          rankings.push(costData);
+        }
+      });
+
+      rankings.sort((a, b) => a.total - b.total);
+      return rankings;
+    }
+
+    // Combinatorial 2-Store Split Engine (Bachat Jugaad)
+    // Evaluates every pair of active stores (A, B) and partitions each item to whichever store offers the lower price.
+    // Accurately charges Store A delivery/handling/bag fees and Store B fees if they have >= 1 item.
+    function computeSmartSplitArbitrage() {
+      const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+      if (activeStores.length < 2 || basket.length === 0) return null;
+
+      let bestSplit = null;
+
+      // Iterate all distinct pairs of active stores
+      for (let i = 0; i < activeStores.length; i++) {
+        for (let j = i + 1; j < activeStores.length; j++) {
+          const storeAId = activeStores[i];
+          const storeBId = activeStores[j];
+
+          const itemsA = [];
+          const itemsB = [];
+
+          // For each basket item, assign to the cheaper store between A & B
+          basket.forEach(cartItem => {
+            const catalogItem = CATALOG.find(c => c.id === cartItem.itemId);
+            if (!catalogItem) return;
+            const priceA = catalogItem.prices[storeAId];
+            const priceB = catalogItem.prices[storeBId];
+
+            if (priceA <= priceB) {
+              itemsA.push({ ...cartItem, catalogItem, unitPrice: priceA });
+            } else {
+              itemsB.push({ ...cartItem, catalogItem, unitPrice: priceB });
+            }
+          });
+
+          // Must partition to both stores to be a real 2-store split
+          if (itemsA.length === 0 || itemsB.length === 0) continue;
+
+          const costA = calculateStoreBasketCost(storeAId, itemsA);
+          const costB = calculateStoreBasketCost(storeBId, itemsB);
+
+          const combinedTotal = costA.total + costB.total;
+
+          if (!bestSplit || combinedTotal < bestSplit.combinedTotal) {
+            bestSplit = {
+              storeA: STORES[storeAId],
+              storeB: STORES[storeBId],
+              costA,
+              costB,
+              itemsA,
+              itemsB,
+              combinedTotal
+            };
+          }
+        }
+      }
+
+      return bestSplit;
+    }
+
+    // ==========================================
+    // 4. UI RENDERING ENGINES
+    // ==========================================
+
+    // Initialize Store Serviceability Pills
+    function renderStoreToggles() {
+      const container = document.getElementById('store-toggles-container');
+      container.innerHTML = '';
+
+      let activeCount = 0;
+      Object.values(STORES).forEach(store => {
+        if (store.active) activeCount++;
+
+        const btn = document.createElement('button');
+        btn.id = `toggle-${store.id}`;
+        btn.className = `p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+          store.active
+            ? 'bg-slate-900 border-slate-700 text-white shadow-sm'
+            : 'bg-slate-950/40 border-slate-900 text-slate-500 opacity-60'
+        }`;
+
+        btn.innerHTML = `
+          <div class="flex items-center space-x-2 truncate">
+            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${store.color}"></span>
+            <span class="truncate">${store.tag}</span>
+          </div>
+          <span class="text-[10px] ml-1 px-1.5 py-0.5 rounded font-mono ${store.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-500'}">
+            ${store.active ? 'ON' : 'OFF'}
+          </span>
+        `;
+
+        btn.addEventListener('click', () => {
+          store.active = !store.active;
+          renderApp();
+        });
+
+        container.appendChild(btn);
+      });
+
+      document.getElementById('serviceable-count').textContent = `${activeCount} of ${Object.keys(STORES).length} Active`;
+    }
+
+    // Render Shopping Basket Rows
+    function renderBasket() {
+      const container = document.getElementById('basket-items-list');
+      const countEl = document.getElementById('basket-item-count');
+      container.innerHTML = '';
+
+      if (basket.length === 0) {
+        countEl.textContent = '0 items';
+        container.innerHTML = `
+          <div class="py-12 text-center text-slate-400 space-y-2">
+            <i data-lucide="shopping-bag" class="w-10 h-10 mx-auto text-slate-600"></i>
+            <p class="font-medium text-sm">Your shopping basket is empty</p>
+            <p class="text-xs text-slate-500">Add staples from the catalog below or paste your WhatsApp list!</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      const totalItemsCount = basket.reduce((sum, item) => sum + item.qty, 0);
+      countEl.textContent = `${basket.length} products (${totalItemsCount} total units)`;
+
+      basket.forEach((cartItem, index) => {
+        const item = CATALOG.find(c => c.id === cartItem.itemId);
+        if (!item) return;
+
+        // Find min price among active stores
+        const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+        let minPrice = Infinity;
+        let minStore = null;
+
+        activeStores.forEach(sId => {
+          const p = item.prices[sId];
+          if (p !== undefined && p < minPrice) {
+            minPrice = p;
+            minStore = STORES[sId];
+          }
+        });
+
+        const row = document.createElement('div');
+        row.className = 'py-3 flex items-center justify-between gap-3 group';
+        row.innerHTML = `
+          <div class="flex items-center space-x-3 min-w-0">
+            <span class="text-2xl flex-shrink-0">${item.emoji}</span>
+            <div class="min-w-0">
+              <h4 class="text-xs sm:text-sm font-bold text-slate-100 truncate">${item.name}</h4>
+              <div class="flex items-center space-x-2 text-[11px] text-slate-400">
+                <span>${item.unit}</span>
+                <span>•</span>
+                <span class="text-emerald-400 font-medium">Best: ₹${minPrice} (${minStore ? minStore.tag : 'N/A'})</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-3 flex-shrink-0">
+            <!-- Quantity Control -->
+            <div class="flex items-center bg-slate-900 border border-slate-700 rounded-lg p-0.5">
+              <button class="w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:bg-slate-800 hover:text-white" onclick="changeBasketQty('${item.id}', -1)" title="Decrease">
+                -
+              </button>
+              <span class="w-7 text-center font-mono text-xs font-bold text-emerald-400">${cartItem.qty}</span>
+              <button class="w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:bg-slate-800 hover:text-white" onclick="changeBasketQty('${item.id}', 1)" title="Increase">
+                +
+              </button>
+            </div>
+
+            <!-- Remove Button -->
+            <button class="text-slate-500 hover:text-rose-400 p-1 rounded-md transition-colors" onclick="removeBasketItem('${item.id}')" title="Remove">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Render Full Catalog Explorer Cards
+    function renderCatalogCards() {
+      const container = document.getElementById('catalog-cards-grid');
+      container.innerHTML = '';
+
+      const filtered = CATALOG.filter(item => {
+        if (activeCategory === 'all') return true;
+        return item.category === activeCategory;
+      });
+
+      const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+
+      filtered.forEach(item => {
+        // Calculate min and max price among active stores
+        let minPrice = Infinity;
+        let maxPrice = -Infinity;
+        let bestStore = null;
+
+        activeStores.forEach(sId => {
+          const p = item.prices[sId];
+          if (p !== undefined) {
+            if (p < minPrice) { minPrice = p; bestStore = STORES[sId]; }
+            if (p > maxPrice) { maxPrice = p; }
+          }
+        });
+
+        const inCart = basket.find(b => b.itemId === item.id);
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-all flex flex-col justify-between';
+        
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-xl">${item.emoji}</span>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-200">${item.name}</h4>
+                  <span class="text-[10px] text-slate-400">${item.unit}</span>
+                </div>
+              </div>
+              <button onclick="triggerVoiceQueryFor('${item.name}')" class="p-1 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-800" title="Ask AI Voice about this">
+                <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- Price spread -->
+            <div class="mt-2 flex items-center justify-between text-[11px]">
+              <span class="text-slate-400">Range:</span>
+              <span class="font-mono text-slate-300">₹${minPrice === Infinity ? 0 : minPrice} - ₹${maxPrice === -Infinity ? 0 : maxPrice}</span>
+            </div>
+            <div class="text-[11px] text-emerald-400 font-semibold truncate">
+              Cheapest at ${bestStore ? bestStore.name : 'N/A'} (₹${minPrice})
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-between">
+            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">${item.category}</span>
+            <button onclick="addCatalogItemToBasket('${item.id}')" class="px-2.5 py-1 rounded-lg text-xs font-bold ${inCart ? 'bg-slate-800 text-emerald-400 border border-emerald-500/30' : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-slate-950'} transition-all flex items-center space-x-1">
+              <span>${inCart ? `In Cart (${inCart.qty})` : '+ Add'}</span>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Populate the Catalog Quick-Add Select
+    function populateCatalogSelect() {
+      const select = document.getElementById('catalog-quick-add-select');
+      select.innerHTML = '<option value="">+ Add item from authentic Indian staples catalog...</option>';
+
+      CATALOG.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = `${item.emoji} ${item.name} (${item.unit})`;
+        select.appendChild(opt);
+      });
+    }
+
+    // Render Savings Analytics Dashboard & Platform Rankings
+    function renderAnalytics() {
+      const rankings = computeAllStoreRankings();
+      const splitResult = computeSmartSplitArbitrage();
+      lastOptimalSplit = splitResult;
+
+      const rankingsContainer = document.getElementById('store-rankings-list');
+      rankingsContainer.innerHTML = '';
+
+      if (rankings.length === 0 || basket.length === 0) {
+        document.getElementById('champion-total-cost').textContent = '₹0';
+        document.getElementById('champion-store-name').textContent = 'No Stores Serviceable';
+        document.getElementById('champion-store-sub').textContent = 'Please enable stores above';
+        document.getElementById('champion-savings-vs-worst').textContent = 'Saves ₹0';
+        document.getElementById('champion-items-subtotal').textContent = '₹0';
+        document.getElementById('champion-delivery-fee').textContent = '₹0';
+        document.getElementById('champion-handling-fee').textContent = '₹0';
+        document.getElementById('champion-bag-fee').textContent = '₹0';
+
+        document.getElementById('split-net-total').textContent = '₹0';
+        document.getElementById('split-net-savings').textContent = 'No split available';
+        document.getElementById('split-store-1-tag').textContent = 'Store 1';
+        document.getElementById('split-store-2-tag').textContent = 'Store 2';
+        document.getElementById('split-store-1-items').textContent = 'Cart empty';
+        document.getElementById('split-store-2-items').textContent = 'Cart empty';
+        return;
+      }
+
+      const champion = rankings[0];
+      const worst = rankings[rankings.length - 1];
+      const savingsVsWorst = Math.max(0, worst.total - champion.total);
+
+      // 1. Single-App Champion Card Updates
+      document.getElementById('champion-store-name').textContent = champion.storeName;
+      document.getElementById('champion-store-sub').textContent = `${STORES[champion.storeId].deliveryTime} • Lowest Single Platform Total`;
+      document.getElementById('champion-store-logo').textContent = STORES[champion.storeId].tag.substring(0, 3).toUpperCase();
+      document.getElementById('champion-store-logo').style.backgroundColor = STORES[champion.storeId].color;
+      document.getElementById('champion-store-logo').style.color = STORES[champion.storeId].textColor;
+      
+      document.getElementById('champion-total-cost').textContent = `₹${champion.total}`;
+      document.getElementById('champion-savings-vs-worst').textContent = `Saves ₹${savingsVsWorst} vs ${worst.storeName}`;
+      
+      document.getElementById('champion-items-subtotal').textContent = `₹${champion.itemsSubtotal}`;
+      document.getElementById('champion-delivery-fee').textContent = champion.deliveryFee === 0 ? 'FREE' : `₹${champion.deliveryFee}`;
+      document.getElementById('champion-handling-fee').textContent = `₹${champion.handlingFee}`;
+      document.getElementById('champion-bag-fee').textContent = `₹${champion.bagFee}`;
+
+      const championStoreObj = STORES[champion.storeId];
+      if (champion.isFreeDelivery) {
+        document.getElementById('champion-delivery-status').innerHTML = `<span class="text-emerald-400 font-bold">✓ Free Delivery Unlocked (Over ₹${championStoreObj.freeDeliveryAbove})</span>`;
+      } else {
+        const needed = championStoreObj.freeDeliveryAbove - champion.itemsSubtotal;
+        document.getElementById('champion-delivery-status').innerHTML = `<span class="text-amber-400">Add ₹${needed} more for FREE delivery</span>`;
+      }
+
+      // 2. Smart Split (Bachat Jugaad) Card Updates
+      if (splitResult && splitResult.combinedTotal < champion.total) {
+        const netArbitrageSavings = champion.total - splitResult.combinedTotal;
+        document.getElementById('split-net-total').textContent = `₹${splitResult.combinedTotal}`;
+        document.getElementById('split-net-savings').textContent = `🔥 Extra ₹${netArbitrageSavings} saved vs Single Champion!`;
+        document.getElementById('split-store-1-tag').textContent = splitResult.storeA.tag;
+        document.getElementById('split-store-2-tag').textContent = splitResult.storeB.tag;
+
+        document.getElementById('split-store-1-header').innerHTML = `
+          <span>${splitResult.storeA.tag} (${splitResult.itemsA.length} items)</span>
+          <span class="font-mono text-emerald-400">₹${splitResult.costA.total}</span>
+        `;
+        document.getElementById('split-store-1-items').textContent = splitResult.itemsA.map(i => `${i.qty}x ${i.catalogItem.name.split(' ')[0]}`).join(', ');
+        document.getElementById('split-store-1-fees').textContent = `Items: ₹${splitResult.costA.itemsSubtotal} • Delivery: ₹${splitResult.costA.deliveryFee} • Fees: ₹${splitResult.costA.handlingFee + splitResult.costA.bagFee}`;
+
+        document.getElementById('split-store-2-header').innerHTML = `
+          <span>${splitResult.storeB.tag} (${splitResult.itemsB.length} items)</span>
+          <span class="font-mono text-blue-400">₹${splitResult.costB.total}</span>
+        `;
+        document.getElementById('split-store-2-items').textContent = splitResult.itemsB.map(i => `${i.qty}x ${i.catalogItem.name.split(' ')[0]}`).join(', ');
+        document.getElementById('split-store-2-fees').textContent = `Items: ₹${splitResult.costB.itemsSubtotal} • Delivery: ₹${splitResult.costB.deliveryFee} • Fees: ₹${splitResult.costB.handlingFee + splitResult.costB.bagFee}`;
+
+        document.getElementById('split-verdict-summary').innerHTML = `
+          <i data-lucide="sparkle" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Dual order beats single store even with both delivery & handling fees!</span>
+        `;
+        document.getElementById('smart-split-badge').className = 'px-2.5 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950 uppercase animate-pulse';
+        document.getElementById('smart-split-badge').textContent = `EXTRA ₹${netArbitrageSavings} OFF`;
+      } else {
+        // Single Champion is already optimal or no split saves more
+        document.getElementById('split-net-total').textContent = `₹${champion.total}`;
+        document.getElementById('split-net-savings').textContent = 'Single Champion is already lowest!';
+        document.getElementById('split-store-1-tag').textContent = champion.storeName;
+        document.getElementById('split-store-2-tag').textContent = 'Not Needed';
+        document.getElementById('split-store-1-items').textContent = 'Dual platform split does not overcome dual delivery fees for this basket.';
+        document.getElementById('split-store-2-items').textContent = 'Placing entire order on Single-App Champion saves maximum money!';
+        document.getElementById('split-store-1-header').innerHTML = `<span>Best Single Store</span><span class="font-mono text-emerald-400">₹${champion.total}</span>`;
+        document.getElementById('split-store-2-header').innerHTML = `<span>Alternative Split</span><span class="font-mono text-slate-400">N/A</span>`;
+        document.getElementById('split-store-1-fees').textContent = 'Single delivery fee applied';
+        document.getElementById('split-store-2-fees').textContent = 'Zero dual surcharge';
+        document.getElementById('split-verdict-summary').innerHTML = `
+          <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Single-App Champion is optimal for current basket size</span>
+        `;
+        document.getElementById('smart-split-badge').className = 'px-2.5 py-1 rounded-full text-xs font-black bg-slate-800 text-slate-400';
+        document.getElementById('smart-split-badge').textContent = 'SINGLE STORE WINS';
+      }
+
+      // 3. Platform Leaderboard Ranking List
+      const minOverall = champion.total;
+      const maxOverall = worst.total;
+
+      rankings.forEach((r, idx) => {
+        const storeObj = STORES[r.storeId];
+        const isChamp = idx === 0;
+        const diffFromChamp = r.total - minOverall;
+
+        // Progress bar percentage (min is 0%, max is 100%)
+        const spread = maxOverall - minOverall;
+        const pctDiff = spread > 0 ? ((r.total - minOverall) / spread) * 100 : 0;
+
+        const row = document.createElement('div');
+        row.className = `p-3 rounded-xl border transition-all ${
+          isChamp
+            ? 'bg-emerald-950/30 border-emerald-500/50 shadow-md shadow-emerald-950/40'
+            : 'bg-slate-900/60 border-slate-800/80 hover:border-slate-700'
+        }`;
+
+        row.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center space-x-2.5">
+              <span class="font-mono font-bold text-xs ${isChamp ? 'text-emerald-400' : 'text-slate-500'}">
+                #${idx + 1}
+              </span>
+              <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${storeObj.color}"></div>
+              <div>
+                <span class="text-xs font-bold text-white">${storeObj.name}</span>
+                <span class="text-[10px] text-slate-400 ml-1.5">${storeObj.deliveryTime}</span>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <span class="font-mono font-bold text-sm text-white">₹${r.total}</span>
+              <div class="text-[10px] ${isChamp ? 'text-emerald-400 font-bold' : 'text-rose-400'}">
+                ${isChamp ? 'Lowest Price' : `+₹${diffFromChamp} higher`}
+              </div>
+            </div>
+          </div>
+
+          <!-- Fee summary pill -->
+          <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-800/60">
+            <span class="font-mono">Items: ₹${r.itemsSubtotal}</span>
+            <span>Del: ${r.deliveryFee === 0 ? '<span class="text-emerald-400">FREE</span>' : `₹${r.deliveryFee}`}</span>
+            <span>Handling: ₹${r.handlingFee}</span>
+            <span>Bag: ₹${r.bagFee}</span>
+          </div>
+
+          <!-- Comparative bar -->
+          <div class="mt-2 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500 ${isChamp ? 'bg-emerald-500' : 'bg-slate-600'}" style="width: ${isChamp ? '100%' : `${100 - pctDiff * 0.7}%`}"></div>
+          </div>
+        `;
+
+        rankingsContainer.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Master Render Function
+    function renderApp() {
+      renderStoreToggles();
+      renderBasket();
+      renderCatalogCards();
+      renderAnalytics();
+    }
+
+    // ==========================================
+    // 5. BASKET ACTIONS & BULK IMPORTER
+    // ==========================================
+    function changeBasketQty(itemId, delta) {
+      const existing = basket.find(b => b.itemId === itemId);
+      if (existing) {
+        existing.qty += delta;
+        if (existing.qty <= 0) {
+          basket = basket.filter(b => b.itemId !== itemId);
+        }
+      } else if (delta > 0) {
+        basket.push({ itemId, qty: delta });
+      }
+      renderApp();
+    }
+
+    function removeBasketItem(itemId) {
+      basket = basket.filter(b => b.itemId !== itemId);
+      renderApp();
+    }
+
+    function addCatalogItemToBasket(itemId) {
+      changeBasketQty(itemId, 1);
+    }
+
+    // Smart WhatsApp / Notepad Shopping List Parser
+    function parseWhatsAppGroceryList(text) {
+      if (!text || text.trim() === '') return [];
+
+      const lines = text.split(/\r?\n|,/);
+      const parsedItems = [];
+
+      lines.forEach(line => {
+        const cleaned = line.trim().toLowerCase();
+        if (!cleaned) return;
+
+        // Try to extract quantity (e.g. "2 milk", "milk 2", "1kg onion", "5kg atta", "12 eggs")
+        let qty = 1;
+        const qtyMatch = cleaned.match(/(\d+)\s*(kg|l|litre|litres|pcs|pieces)?/);
+        if (qtyMatch && qtyMatch[1]) {
+          const num = parseInt(qtyMatch[1], 10);
+          // If it matches 5 for 5kg atta, treat as 1 unit of 5kg pack unless clearly >1 pack
+          if (num > 0 && num <= 10 && !cleaned.includes('5kg') && !cleaned.includes('12 pcs')) {
+            qty = num;
+          }
+        }
+
+        // Match against catalog keywords
+        let bestMatch = null;
+        let highestScore = 0;
+
+        CATALOG.forEach(item => {
+          let score = 0;
+          item.keywords.forEach(kw => {
+            if (cleaned.includes(kw)) {
+              score += kw.length;
+            }
+          });
+          if (score > highestScore) {
+            highestScore = score;
+            bestMatch = item;
+          }
+        });
+
+        if (bestMatch) {
+          const existing = parsedItems.find(p => p.itemId === bestMatch.id);
+          if (existing) {
+            existing.qty += qty;
+          } else {
+            parsedItems.push({ itemId: bestMatch.id, qty });
+          }
+        }
+      });
+
+      return parsedItems;
+    }
+
+    // ==========================================
+    // 6. AI VOICE SEARCH ASSISTANT ENGINE
+    // ==========================================
+
+    // Native Speech Synthesis (Text to Speech)
+    function speakText(text) {
+      if (!isAudioEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel(); // Stop any pending speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      // Look for natural English voice (prefer Indian English if available)
+      const voices = window.speechSynthesis.getVoices();
+      const indianVoice = voices.find(v => v.lang === 'en-IN' || v.name.includes('India'));
+      if (indianVoice) {
+        utterance.voice = indianVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Process a voice search query (either spoken or preset chip)
+    function processVoiceQuery(queryText) {
+      const query = queryText.toLowerCase().trim();
+      let matchedItem = null;
+      let highestScore = 0;
+
+      CATALOG.forEach(item => {
+        let score = 0;
+        item.keywords.forEach(kw => {
+          if (query.includes(kw)) {
+            score += (kw.length * 2);
+          }
+        });
+        if (query.includes(item.name.toLowerCase())) {
+          score += 20;
+        }
+        if (score > highestScore) {
+          highestScore = score;
+          matchedItem = item;
+        }
+      });
+
+      // Fallback to first catalog item if no match
+      if (!matchedItem) {
+        matchedItem = CATALOG[0];
+      }
+
+      currentVoiceSpotlightItem = matchedItem;
+
+      // Find lowest and highest store among active stores
+      const activeStores = Object.keys(STORES).filter(k => STORES[k].active);
+      let cheapestPrice = Infinity;
+      let cheapestStore = null;
+      let highestPrice = -Infinity;
+      let highestStore = null;
+
+      activeStores.forEach(sId => {
+        const p = matchedItem.prices[sId];
+        if (p !== undefined) {
+          if (p < cheapestPrice) { cheapestPrice = p; cheapestStore = STORES[sId]; }
+          if (p > highestPrice) { highestPrice = p; highestStore = STORES[sId]; }
+        }
+      });
+
+      const savings = highestPrice - cheapestPrice;
+      const spokenVerdict = `At ₹${cheapestPrice}, ${cheapestStore ? cheapestStore.name : 'Unknown'} has the cheapest price for ${matchedItem.name}, saving you ₹${savings} versus ${highestStore ? highestStore.name : 'other apps'}!`;
+
+      // Update UI Spotlight Banner
+      const banner = document.getElementById('voice-spotlight-banner');
+      banner.classList.remove('hidden');
+
+      document.getElementById('voice-query-badge').textContent = `"${queryText}"`;
+      document.getElementById('voice-matched-title').textContent = `${matchedItem.emoji} ${matchedItem.name} (${matchedItem.unit})`;
+      document.getElementById('voice-spoken-verdict').textContent = spokenVerdict;
+
+      // Render Spotlight Store Prices Grid
+      const grid = document.getElementById('voice-store-prices-grid');
+      grid.innerHTML = '';
+
+      activeStores.forEach(sId => {
+        const store = STORES[sId];
+        const price = matchedItem.prices[sId];
+        const isCheapest = sId === (cheapestStore ? cheapestStore.id : '');
+
+        const col = document.createElement('div');
+        col.className = `p-2.5 rounded-xl border text-center transition-all ${
+          isCheapest
+            ? 'bg-emerald-950/60 border-emerald-500 shadow-md ring-1 ring-emerald-500'
+            : 'bg-slate-900/60 border-slate-800'
+        }`;
+
+        col.innerHTML = `
+          <div class="text-[10px] font-bold text-slate-400 truncate">${store.tag}</div>
+          <div class="text-base font-black font-mono my-0.5 ${isCheapest ? 'text-emerald-400' : 'text-slate-200'}">
+            ₹${price}
+          </div>
+          <span class="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase ${isCheapest ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-500'}">
+            ${isCheapest ? 'Cheapest' : 'Standard'}
+          </span>
+        `;
+        grid.appendChild(col);
+      });
+
+      // Speak result aloud
+      speakText(spokenVerdict);
+
+      // Scroll smoothly to spotlight
+      banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Browser Speech Recognition Initialization (5 Seconds Input Window)
+    const VOICE_INPUT_DURATION_SECONDS = 5;
+    let voiceTimerInterval = null;
+    let voiceTimeout = null;
+    let accumulatedTranscript = '';
+
+    function setupVoiceRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const startBtn = document.getElementById('start-voice-btn');
+      const ping = document.getElementById('voice-ping');
+      const micIcon = document.getElementById('mic-icon');
+      const btnText = document.getElementById('voice-btn-text');
+      const timerBar = document.getElementById('voice-timer-bar');
+
+      let remainingSeconds = VOICE_INPUT_DURATION_SECONDS;
+
+      function clearVoiceTimers() {
+        if (voiceTimerInterval) {
+          clearInterval(voiceTimerInterval);
+          voiceTimerInterval = null;
+        }
+        if (voiceTimeout) {
+          clearTimeout(voiceTimeout);
+          voiceTimeout = null;
+        }
+        if (timerBar) {
+          timerBar.style.width = '0%';
+        }
+      }
+
+      function stopListening(processResult = true) {
+        const wasActive = isListening;
+        isListening = false;
+        clearVoiceTimers();
+        ping.classList.add('hidden');
+        btnText.textContent = 'Ask AI Voice (5s)';
+        startBtn.classList.remove('ring-2', 'ring-red-400');
+
+        if (speechRecognitionInstance) {
+          try {
+            speechRecognitionInstance.stop();
+          } catch (e) {}
+        }
+
+        const candidateText = accumulatedTranscript.trim();
+        accumulatedTranscript = '';
+
+        if (processResult && candidateText.length > 0) {
+          processVoiceQuery(candidateText);
+        } else if (processResult && wasActive) {
+          console.log('5-second voice window finished without speech detected.');
+        }
+      }
+
+      if (!SpeechRecognition) {
+        console.warn('SpeechRecognition API not natively supported in this browser. Providing simulated input fallback.');
+        startBtn.addEventListener('click', () => {
+          const sample = prompt('Microphone recognition requires Web Speech API support. Type your grocery query (5s test):', 'How much is 1kg onion?');
+          if (sample) processVoiceQuery(sample);
+        });
+        return;
+      }
+
+      speechRecognitionInstance = new SpeechRecognition();
+      // Continuous = true ensures the engine does not prematurely abort during pauses in the 5-second window
+      speechRecognitionInstance.continuous = true;
+      speechRecognitionInstance.interimResults = true;
+      speechRecognitionInstance.lang = 'en-IN';
+
+      speechRecognitionInstance.onstart = () => {
+        isListening = true;
+        accumulatedTranscript = '';
+        remainingSeconds = VOICE_INPUT_DURATION_SECONDS;
+        ping.classList.remove('hidden');
+        btnText.textContent = `Listening (${remainingSeconds}s)...`;
+        startBtn.classList.add('ring-2', 'ring-red-400');
+        
+        if (timerBar) {
+          timerBar.style.width = '100%';
+        }
+
+        clearVoiceTimers();
+
+        // 1-second countdown interval
+        voiceTimerInterval = setInterval(() => {
+          remainingSeconds--;
+          if (remainingSeconds > 0) {
+            btnText.textContent = `Listening (${remainingSeconds}s)...`;
+            if (timerBar) {
+              timerBar.style.width = `${(remainingSeconds / VOICE_INPUT_DURATION_SECONDS) * 100}%`;
+            }
+          } else {
+            btnText.textContent = 'Processing...';
+            if (timerBar) {
+              timerBar.style.width = '0%';
+            }
+            clearInterval(voiceTimerInterval);
+            voiceTimerInterval = null;
+          }
+        }, 1000);
+
+        // Terminate listening precisely when the 5-second timer expires
+        voiceTimeout = setTimeout(() => {
+          stopListening(true);
+        }, VOICE_INPUT_DURATION_SECONDS * 1000);
+      };
+
+      speechRecognitionInstance.onresult = (event) => {
+        let currentText = '';
+        for (let i = 0; i < event.results.length; i++) {
+          currentText += event.results[i][0].transcript + ' ';
+        }
+        if (currentText.trim().length > 0) {
+          accumulatedTranscript = currentText.trim();
+        }
+      };
+
+      speechRecognitionInstance.onerror = (event) => {
+        console.warn('Speech recognition warning/event:', event.error);
+        if (event.error !== 'no-speech') {
+          stopListening(false);
+        }
+      };
+
+      speechRecognitionInstance.onend = () => {
+        // If the browser ends before the 5 seconds and we are still listening, restart to complete 5-second window
+        if (isListening && remainingSeconds > 0) {
+          try {
+            speechRecognitionInstance.start();
+          } catch (e) {
+            stopListening(true);
+          }
+        }
+      };
+
+      startBtn.addEventListener('click', () => {
+        if (isListening) {
+          // Clicking while active finishes the 5s window early and evaluates
+          stopListening(true);
+        } else {
+          try {
+            speechRecognitionInstance.start();
+          } catch (e) {
+            console.error('Error starting speech recognition:', e);
+            stopListening(false);
+          }
+        }
+      });
+    }
+
+    function triggerVoiceQueryFor(query) {
+      processVoiceQuery(query);
+    }
+
+    // ==========================================
+    // 7. EVENT LISTENERS & INITIALIZATION
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Lucide Icons
+      lucide.createIcons();
+
+      // Audio Toggle Button
+      const audioBtn = document.getElementById('toggle-audio-btn');
+      const audioLabel = document.getElementById('audio-label');
+      const audioIcon = document.getElementById('audio-icon');
+
+      audioBtn.addEventListener('click', () => {
+        isAudioEnabled = !isAudioEnabled;
+        if (isAudioEnabled) {
+          audioLabel.textContent = 'Voice: On';
+          audioIcon.setAttribute('data-lucide', 'volume-2');
+          audioIcon.classList.remove('text-slate-500');
+          audioIcon.classList.add('text-emerald-400');
+        } else {
+          window.speechSynthesis.cancel();
+          audioLabel.textContent = 'Voice: Muted';
+          audioIcon.setAttribute('data-lucide', 'volume-x');
+          audioIcon.classList.remove('text-emerald-400');
+          audioIcon.classList.add('text-slate-500');
+        }
+        lucide.createIcons();
+      });
+
+      // Serviceability Select All / Clear
+      document.getElementById('select-all-stores-btn').addEventListener('click', () => {
+        Object.values(STORES).forEach(s => s.active = true);
+        renderApp();
+      });
+
+      document.getElementById('clear-stores-btn').addEventListener('click', () => {
+        // Leave at least 2 active for comparison
+        Object.values(STORES).forEach((s, idx) => s.active = idx < 2);
+        renderApp();
+      });
+
+      // Quick Voice Chips
+      document.querySelectorAll('.voice-preset-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const query = chip.getAttribute('data-query');
+          processVoiceQuery(query);
+        });
+      });
+
+      // Close Voice Spotlight Banner
+      document.getElementById('close-voice-banner-btn').addEventListener('click', () => {
+        document.getElementById('voice-spotlight-banner').classList.add('hidden');
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      });
+
+      // Replay Voice Verdict
+      document.getElementById('replay-voice-btn').addEventListener('click', () => {
+        const text = document.getElementById('voice-spoken-verdict').textContent;
+        speakText(text);
+      });
+
+      // Add To Basket from Voice Spotlight Banner
+      document.getElementById('voice-add-to-basket-btn').addEventListener('click', () => {
+        if (currentVoiceSpotlightItem) {
+          addCatalogItemToBasket(currentVoiceSpotlightItem.id);
+        }
+      });
+
+      // Catalog Category Filter Tabs
+      document.querySelectorAll('.catalog-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.catalog-filter-btn').forEach(b => {
+            b.classList.remove('bg-emerald-500', 'text-slate-950');
+            b.classList.add('text-slate-400');
+          });
+          btn.classList.add('bg-emerald-500', 'text-slate-950');
+          btn.classList.remove('text-slate-400');
+          activeCategory = btn.getAttribute('data-cat');
+          renderCatalogCards();
+        });
+      });
+
+      // Quick Add from Select Box
+      document.getElementById('add-selected-item-btn').addEventListener('click', () => {
+        const sel = document.getElementById('catalog-quick-add-select');
+        const val = sel.value;
+        if (val) {
+          addCatalogItemToBasket(val);
+          sel.value = '';
+        }
+      });
+
+      // Clear Basket
+      document.getElementById('clear-basket-btn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear your shopping basket?')) {
+          basket = [];
+          renderApp();
+        }
+      });
+
+      // WhatsApp / Bulk Importer Drawer
+      const importerDrawer = document.getElementById('importer-drawer');
+      document.getElementById('toggle-importer-btn').addEventListener('click', () => {
+        importerDrawer.classList.toggle('hidden');
+      });
+
+      document.getElementById('load-sample-list-btn').addEventListener('click', () => {
+        const sampleText = `1kg onion\n1kg tomato\n2 nandini milk\n5kg atta\n12 eggs\ntender coconut\nsalt 1kg`;
+        document.getElementById('bulk-import-textarea').value = sampleText;
+      });
+
+      document.getElementById('apply-bulk-import-btn').addEventListener('click', () => {
+        const text = document.getElementById('bulk-import-textarea').value;
+        const parsed = parseWhatsAppGroceryList(text);
+        if (parsed.length > 0) {
+          basket = parsed;
+          renderApp();
+          importerDrawer.classList.add('hidden');
+        } else {
+          alert('Could not match any catalog items from the pasted text. Try checking spelling or click "Load Typical Sunday Grocery Run"!');
+        }
+      });
+
+      // Fee Rules Modal Toggle
+      document.getElementById('toggle-fee-rules-btn').addEventListener('click', () => {
+        document.getElementById('fee-rules-modal').classList.toggle('hidden');
+      });
+
+      // Smart Split Modal
+      const splitModal = document.getElementById('split-modal');
+      document.getElementById('view-split-details-btn').addEventListener('click', () => {
+        if (!lastOptimalSplit) {
+          alert('No 2-store split currently beats the Single-App Champion for this cart.');
+          return;
+        }
+
+        const content = document.getElementById('split-modal-content');
+        const s = lastOptimalSplit;
+
+        content.innerHTML = `
+          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between font-bold text-emerald-400">
+              <span>Order #1: ${s.storeA.name}</span>
+              <span class="font-mono text-white">₹${s.costA.total}</span>
+            </div>
+            <div class="text-slate-300">
+              <span class="text-slate-500">Items to buy:</span>
+              <ul class="list-disc list-inside mt-1 space-y-0.5">
+                ${s.itemsA.map(i => `<li>${i.qty}x ${i.catalogItem.name} (${i.catalogItem.unit}) @ ₹${i.unitPrice} = ₹${i.qty * i.unitPrice}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800">
+              Subtotal: ₹${s.costA.itemsSubtotal} • Delivery: ₹${s.costA.deliveryFee} • Handling: ₹${s.costA.handlingFee} • Bag: ₹${s.costA.bagFee}
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between font-bold text-blue-400">
+              <span>Order #2: ${s.storeB.name}</span>
+              <span class="font-mono text-white">₹${s.costB.total}</span>
+            </div>
+            <div class="text-slate-300">
+              <span class="text-slate-500">Items to buy:</span>
+              <ul class="list-disc list-inside mt-1 space-y-0.5">
+                ${s.itemsB.map(i => `<li>${i.qty}x ${i.catalogItem.name} (${i.catalogItem.unit}) @ ₹${i.unitPrice} = ₹${i.qty * i.unitPrice}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800">
+              Subtotal: ₹${s.costB.itemsSubtotal} • Delivery: ₹${s.costB.deliveryFee} • Handling: ₹${s.costB.handlingFee} • Bag: ₹${s.costB.bagFee}
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between font-bold">
+            <span class="text-amber-300">Net Combined Total (After All Fees):</span>
+            <span class="font-mono text-lg text-amber-400">₹${s.combinedTotal}</span>
+          </div>
+        `;
+
+        splitModal.classList.remove('hidden');
+      });
+
+      document.getElementById('close-split-modal').addEventListener('click', () => {
+        splitModal.classList.add('hidden');
+      });
+
+      splitModal.addEventListener('click', (e) => {
+        if (e.target === splitModal) splitModal.classList.add('hidden');
+      });
+
+      // Setup Speech Recognition
+      setupVoiceRecognition();
+
+      // Setup Catalog Select Options
+      populateCatalogSelect();
+
+      // Initial Render
+      renderApp();
+    });
+  </script>
+</body>
+</html>

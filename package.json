@@ -1,0 +1,21 @@
+{
+  "name": "bachatcart-india",
+  "version": "1.0.0",
+  "description": "Indian quick-commerce grocery price arbitrage and combinatorial split savings engine",
+  "main": "server.py",
+  "scripts": {
+    "start": "python server.py",
+    "serve": "python -m http.server 3000"
+  },
+  "keywords": [
+    "grocery-arbitrage",
+    "blinkit",
+    "zepto",
+    "instamart",
+    "quick-commerce",
+    "india",
+    "speech-recognition"
+  ],
+  "author": "BachatCart Team",
+  "license": "MIT"
+}
